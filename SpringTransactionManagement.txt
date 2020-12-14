@@ -1,0 +1,47 @@
+
+https://dzone.com/articles/spring-transaction-propagation - For Reference
+
+Spring Transaction Management
+
+Propagation.REQUIRED
+
+Propagation.REQUIRED is the default setting of a @Transactional annotation. The REQUIRED propagation can be interpreted as follows:
+If there is no existing physical transaction, then the Spring container will create one.
+If there is an existing physical transaction, then the methods annotated with REQUIRE will participate in this physical transaction.
+Each method annotated with REQUIRED demarcates a logical transaction and these logical transactions participate in the same physical transaction.
+Each logical transaction has its own scope, but, in case of this propagation mechanism, all these scopes are mapped to the same physical transaction.
+
+
+
+Propagation.REQUIRES_NEW
+
+Propagation.REQUIRES_NEW instructs the Spring container to always create a new physical transaction. Such transactions can also declare their own timeouts, read-only, and isolation level settings and not inherit an outer physical transaction’s characteristics.
+
+
+Propagation.NESTED
+
+One solution is to use JdbcTemplate or a JPA provider that supports nested transactions. You may also use jOOQ.
+
+
+
+Propagation.MANDATORY
+
+Propagation.MANDATORY requires an existing physical transaction or will cause an exception, as follows:
+
+
+Propagation.NEVER
+
+The Propagation.NEVER states that no physical transaction should exist. If a physical transaction is found, then NEVER will cause an exception.
+When you call a method annotated with NEVER, you must ensure that no physical transaction is open. The code inside this method can open physical transactions with no problem.
+
+
+
+Propagation.NOT_SUPPORTED
+
+Propagation.NOT_SUPPORTED states that if a physical transaction exists, then it will be suspended before continuing. This physical transaction will be automatically resumed at the end. After this transaction is resumed, it can be rolled back (in case of a failure) or committed.
+
+
+
+Propagation.SUPPORTS
+
+9716894432

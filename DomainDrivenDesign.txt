@@ -1,0 +1,5 @@
+The entity, value object, aggregate, services, factory, and repository are the building blocks also known as the tactical approach to Domain-Driven Design toward its full realization:
+
+In the context of building applications, DDD talks about problems as domains. It describes independent problem areas as Bounded Contexts (each Bounded Context correlates to a microservice), and emphasizes a common language to talk about these problems. It also suggests many technical concepts and patterns, like domain entities with rich models (no anemic-domain model), value objects, aggregates and aggregate root (or root entity) rules to support the internal implementation.
+
+For example, in banking domain, individual microservices can be designed to handle various business functions such as retail banking, on-line banking, on-line trading etc.

@@ -1,0 +1,8 @@
+Development & Operational Architecture Capabilities
+
+Program & Project Management Capabilities
+Quality & Knowledge Management Capabilities
+Analysis & Design Capabilities
+Build & Test Capabilities
+Data Manegement Capabilities
+IT Operations Management Capabilities

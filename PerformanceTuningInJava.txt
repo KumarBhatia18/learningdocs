@@ -1,0 +1,25 @@
+Java 8 has come with the following improvements/changes of HashMap objects in case of high collisions.
+The alternative String hash function added in Java 7 has been removed.
+Buckets containing a large number of colliding keys will store their entries in a balanced tree instead of a linked list after certain threshold is reached.
+
+Permament generation, where the VM stored internal native data structures, such as class information, has been replaced with metaspace. Metaspace eliminates
+java.lang.OutOfMemoryError: PermGen space
+errors. The java command introduces the option
+-XX:MetaspaceSize
+, which sets the maximum amount of native memory that can be allocated for class metadata. By default, the size is not limited. In addition, the experimental option
+-Xshare
+has been introduced, which reduces footprint and startup time by sharing loaded JDK classes between all Java processes on the same host.
+
+Serial GC
+This is the simplest garbage collector, designed for single threaded systems and small heap size. It freezes all applications while working. Can be turned on using -XX:+UseSerialGC JVM option.
+
+Parallel/Throughput GC
+This is JVM’s default collector in JDK 8. As the name suggests, it uses multiple threads to scan through the heap space and perform compaction. A drawback of this collector is that it pauses the application threads while performing minor or full GC.
+It is best suited if applications that can handle such pauses, and try to optimize CPU overhead caused by the collector
+
+The CMS collector
+The CMS collector (“concurrent-mark-sweep”) algorithm uses multiple threads (“concurrent”) to scan through the heap (“mark”) for unused objects that can be recycled (“sweep”).
+
+G1 collector
+Last but not the least is the Garbage-First collector, designed for heap sizes greater than 4GB. It divides the heap size into regions spanning from 1MB to 32Mb, based on the heap size.
+

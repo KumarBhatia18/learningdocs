@@ -1,0 +1,12 @@
+TA Links - 
+
+https://confluence.cares.cardinalhealth.net:8443/pages/viewpage.action?spaceKey=AI&title=Architecture+and+Infrastructure
+
+https://basics-workshop.cloudfoundry.org/slides/#/74
+
+Poinst - 
+1) Disaster recovery - DB and Services
+2) Performance
+3) Queue Performance.
+
+Deliverable :)

@@ -1,0 +1,153 @@
+Security - 
+
+OKTA with PKCE - 
+
+Sites like Yelp started wanting access to the contact information you had in your Google Contacts. So, Yelp naturally collected your Google username and password so that it could access your contacts. You gave Yelp your permission, so this was all good, Yes? No! With your username and password, Yelp could access your email, your docs - everything you had in Google - not just your contacts. And, worse, Yelp had to store your password in a way that it could use it in plaintext and there was no standard way to revoke your consent to Yelp to access your Google account.
+
+Disadvantages of OKTA 1.0
+1) No way to revoke the access.
+2) Get access to everything.
+
+OKTA 2.0
+1) Client Application wants to access Google Contacts.
+2) It redirects to Google Sign Form.
+3) On successful login, Google redirects with Authorization Code
+4) Client app communicates with Google with Secret + Authorization Code
+5) Google returns the Access Token ID with Limited Access.
+6) Client app provides this Access Token to Google Contacts API
+7) Google Contacts API validates and provider Read Only Access
+
+Issues - 
+1) This Client Secret is Static and if known becomes vulnerable
+2) Google Redirects with Access Token Id, so its visible in the Address Bar which is vulnerable.
+
+PKCE - Proof Key for Code Exchange
+
+This time, you should see the code parameter. While this does end up in your browser history, it has three advantages from a security perspective over having the tokens in your browser history:
+
+It’s very short lived (60 seconds with Okta)
+It can only be used once to be exchanged for tokens
+It can only be exchanged for tokens using a secret (the code verifier created by the okta-auth-js library earlier), which malicious browser extensions would not have access to.
+
+
+https://dev-micah.okta.com/oauth2/default/v1/authorize?
+client_id=0oapu4btsL2xI0y8y356&
+redirect_uri=http://localhost:8080/callback&
+response_type=code& -- It means result of this request will be an Authorization Code
+response_mode=fragment&
+state=MdXrGikS5LACsWs2HZFqS7IC9zMC6F9thOiWDa5gxKRqoMf7bCkTetrrwKw5JIAA&
+nonce=iAXdcF77sQ2ejthPM5xZtytYUjqZkJTXcHkgdyY2NinFx6y83nKssxEzlBtvnSY2&
+code_challenge=elU6u5zyqQT2f92GRQUq6PautAeNDf4DQPayyR0ek_c&
+code_challenge_method=S256&
+scope=openid profile email
+
+https://developer.okta.com/blog/2019/08/22/okta-authjs-pkce
+
+
+implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.cloud:spring-cloud-starter-oauth2'
+    implementation 'org.springframework.cloud:spring-cloud-starter-security'
+	
+https://confluence.cardinalhealth.com/display/API/Secure+REST+endpoints+with+Apigee+and+Spring+Boot+security
+
+The Spring configuration class is annotated with @EnableWebSecurity to enable Spring Security’s web security support and provide the Spring MVC integration. It also extends WebSecurityConfigurerAdapter to configure the app as a resource server. It overrides the config method to set some specifics of the web security configuration and ensures that only authenticated users can access the method:
+
+
+The configure(HttpSecurity) method defines which URL paths should be secured and which should not. The example above requires a “read” scope for a GET on the “greeting” URI and a scope “write” for any POST,PUT, DELETE with an URL that starts with “/api/v1/”. The "antMatchers(AUTH_WHITELIST).permitAll()" allow direct access to white listed URI (non protected).
+
+    protected void configure(HttpSecurity http) throws Exception
+    {
+        http.httpBasic().disable();
+        http.authorizeRequests(authorizeRequests ->
+                authorizeRequests
+                        .antMatchers(AUTH_WHITELIST).permitAll()
+                        .antMatchers(HttpMethod.POST, "/api/v1//**").hasAuthority("SCOPE_v1:write")
+                        .antMatchers(HttpMethod.PUT, "/api/v1//**").hasAuthority("SCOPE_v1:write")
+                        .antMatchers(HttpMethod.DELETE, "/api/v1//**").hasAuthority("SCOPE_v1:write")
+                        .anyRequest().authenticated()
+        )
+                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+    }
+
+
+The second @Bean method create a JwtDecoder, which decodes the JWT passed through the use of  NimbusJwtDecoder method.
+
+There are 3 ways to decode the JWT in SpringBoot:
+
+Separate Authorization server (withJwkSetUri)
+Trusted Symmetric key (withPrivateKey) ; JWT must be encoded with RSA key
+Asymmetric/Public Key (withPublicKey ); JWT must be encoded with RS256
+
+@Bean
+    @Qualifier("apigeeOnbaseOauth2CredentialsDetails")
+    public ClientCredentialsResourceDetails apigeeOnbaseOauth2CredentialsDetails()
+    {
+        ClientCredentialsResourceDetails details = new ClientCredentialsResourceDetails();
+        details.setAccessTokenUri(apigeeCommonOauth2JWTTokenGenerationUrl);
+        details.setClientId(apigeeOnbaseTokenClientId);
+        details.setClientSecret(apigeeOnbaseTokenClientSecret);
+        return details;
+    }
+
+    @Bean
+    @Qualifier("onbaseOAuth2RestTemplate")
+    public OAuth2RestTemplate onbaseOAuth2RestTemplate()
+    {
+        return new OAuth2RestTemplate(apigeeOnbaseOauth2CredentialsDetails());
+    }
+	
+Eureka
+
+eureka.client.enabled=false
+
+USER-EMAIL: noreply@cardinalhealth.com : ID-TOKEN: eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8vY2FyZXMudWFhLnN5c3RlbS5jZi5ucC5nYy5jYWhjbG91ZC5uZXQvdG9rZW5fa2V5cyIsImtpZCI6ImtleS0xIiwidHlwIjoiSldUIn0.eyJzdWIiOiI2NDM0ZTVhYS1kNTk4LTQwNjktOTllOS05ZmVlMjU1YzJkOWQiLCJhdWQiOlsiYjhjMDgzZDYtM2Q0NC00OWE0LTkxZjctMDFiNTg5YTlmNmYwIl0sImlzcyI6Imh0dHBzOi8vY2FyZXMudWFhLnN5c3RlbS5jZi5ucC5nYy5jYWhjbG91ZC5uZXQvb2F1dGgvdG9rZW4iLCJleHAiOjE2MDU4MzQ3MTIsImlhdCI6MTYwNTc5MTUxMiwiYW1yIjpbImV4dCJdLCJhenAiOiJiOGMwODNkNi0zZDQ0LTQ5YTQtOTFmNy0wMWI1ODlhOWY2ZjAiLCJzY29wZSI6WyJvcGVuaWQiXSwiZW1haWwiOiJub3JlcGx5QGNhcmRpbmFsaGVhbHRoLmNvbSIsInppZCI6IjE2NWI0N2ZmLTZhZTctNDkzNi04ZWYxLTJjMWJiMWJiYmQ2ZCIsIm9yaWdpbiI6Im9rdGEtY2FyZXMtcWEiLCJqdGkiOiIxYmZiMDRjNDYwZDA0OGUyYmIyYzQ0ZGFiMjk5MjJkMSIsImFjciI6eyJ2YWx1ZXMiOlsidXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOmFjOmNsYXNzZXM6UGFzc3dvcmRQcm90ZWN0ZWRUcmFuc3BvcnQiXX0sImdpdmVuX25hbWUiOiJDYXJlcyIsImZhbWlseV9uYW1lIjoiVGVzdFVzZXIiLCJwcmV2aW91c19sb2dvbl90aW1lIjoxNjA1Nzg3OTYyNTMwLCJ1c2VyX2F0dHJpYnV0ZXMiOnt9LCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImNsaWVudF9pZCI6ImI4YzA4M2Q2LTNkNDQtNDlhNC05MWY3LTAxYjU4OWE5ZjZmMCIsImNpZCI6ImI4YzA4M2Q2LTNkNDQtNDlhNC05MWY3LTAxYjU4OWE5ZjZmMCIsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJ1c2VyX25hbWUiOiJ0ZXNjYXJidCIsInJldl9zaWciOiI0MDJhZWZjNSIsInVzZXJfaWQiOiI2NDM0ZTVhYS1kNTk4LTQwNjktOTllOS05ZmVlMjU1YzJkOWQiLCJhdXRoX3RpbWUiOjE2MDU3OTE1MTJ9.IvDaksatoNiA2PraGd4LESpSm8PVuXWPyYXZFMsjnMCx_FeBO_1-Vmoto7pyKhgb6CP-JZQ6QkNe_4aUF3uyNh0MLNqgrGTzw-BWhsIVTbbajFWeQ51-UgUq1VDgeascqpryeffcAP8e3pzhUNHqq3OkLp7awuen-8C8AMxjEYnMNZuJ1-91QRHCgcteFckuGZVqJ_Y3ps4ITvjDxAXw701Wdwh2AYWAt8acshOtyxFwiP0V2Kt2TUT9A8j1iZxF6WoMf_5qCbX7JjQ-0G3QygNappCr9UrO6c86lt31XijMe72tiRYxawmhqnpTZC9w_OMvjh5tTEQlgdwI8jMvOw : ACCESS-TOKEN: eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8vY2FyZXMudWFhLnN5c3RlbS5jZi5ucC5nYy5jYWhjbG91ZC5uZXQvdG9rZW5fa2V5cyIsImtpZCI6ImtleS0xIiwidHlwIjoiSldUIn0.eyJqdGkiOiIxYmZiMDRjNDYwZDA0OGUyYmIyYzQ0ZGFiMjk5MjJkMSIsInN1YiI6IjY0MzRlNWFhLWQ1OTgtNDA2OS05OWU5LTlmZWUyNTVjMmQ5ZCIsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJyb2xlcyIsInVzZXJfYXR0cmlidXRlcyJdLCJjbGllbnRfaWQiOiJiOGMwODNkNi0zZDQ0LTQ5YTQtOTFmNy0wMWI1ODlhOWY2ZjAiLCJjaWQiOiJiOGMwODNkNi0zZDQ0LTQ5YTQtOTFmNy0wMWI1ODlhOWY2ZjAiLCJhenAiOiJiOGMwODNkNi0zZDQ0LTQ5YTQtOTFmNy0wMWI1ODlhOWY2ZjAiLCJncmFudF90eXBlIjoiYXV0aG9yaXphdGlvbl9jb2RlIiwidXNlcl9pZCI6IjY0MzRlNWFhLWQ1OTgtNDA2OS05OWU5LTlmZWUyNTVjMmQ5ZCIsIm9yaWdpbiI6Im9rdGEtY2FyZXMtcWEiLCJ1c2VyX25hbWUiOiJ0ZXNjYXJidCIsImVtYWlsIjoibm9yZXBseUBjYXJkaW5hbGhlYWx0aC5jb20iLCJhdXRoX3RpbWUiOjE2MDU3OTE1MTIsInJldl9zaWciOiI0MDJhZWZjNSIsImlhdCI6MTYwNTc5MTUxMiwiZXhwIjoxNjA1ODM0NzEyLCJpc3MiOiJodHRwczovL2NhcmVzLnVhYS5zeXN0ZW0uY2YubnAuZ2MuY2FoY2xvdWQubmV0L29hdXRoL3Rva2VuIiwiemlkIjoiMTY1YjQ3ZmYtNmFlNy00OTM2LThlZjEtMmMxYmIxYmJiZDZkIiwiYXVkIjpbImI4YzA4M2Q2LTNkNDQtNDlhNC05MWY3LTAxYjU4OWE5ZjZmMCIsIm9wZW5pZCJdfQ.DOlU5KePji-BPPGvo4zgxW6gLE1C7GuTCOWr7auEBiXwWIgOhi_6Uei7P00YJoAQ8J9f06J5Oe0xREgy5j8sU1IXdub2wQvz9KiVQjY3ZSsI46-zALKcm9q_mgWv_31wxQBE0yTTz0G0ePapSs1gacqWAvV6_-opFOnwqQ6MDWHNqTO-f-gWFawbOIxP7SgcsYFbnkb6eBoNrFZL2KU23o8dFTXRmUH6ez1MLvi1JGEleSGScoIlzIgnCgWvZaiZDoPZXGMCBg7YJxtIg6IgZS5zZmQ0-ru2ml-hNhRi-BD8dJFzoEn7MQ-eIoC8jN1o4mCVTY871RZaLLTLDoED1A :uid : tescarbt
+
+
+We can create Client Id and Secret using Google API Console Credentials page
+GCP Client Id - 
+243111458348-a6pochusc1nkt4esa54d06mkm9ls2me8.apps.googleusercontent.com
+
+GCP Client Secret - 
+cc3dE8dr7R2wD-ykmWfZkZrS
+
+
+OAuth 2 Grant Types
+In total, there are five different grant type flows defined and described to perform authorizations tasks. Those are …
+Authorization Code Grant Type
+Implicit Grant Type
+Resource Owner Credentials Grant Type
+Client Credentials Grant Type
+Refresh Token Grant
+
+Authorization Code Grant Type
+The Authorization Code Grant Type is the most commonly used grant type to authorize theClient to access protected data from a Resource Server.
+
+
+The recommended mechanism to secure Cardinal Health API is OAuth 2.0. It is an industry-wide standard for securing  APIs. An extension of OAuth 2.0 is Open ID Connect (OIDC) and that is also frequently used in Cardinal Health. While OAuth 2.0 is primarily used for authorization, OIDC also enabled authentication and user context for API security.
+
+
+JWT Token consists of -
+Header
+Payload
+Signature
+
+header:
+{
+  "alg" : "HS256",
+  "typ" : "JWT"
+}
+Payload:
+{
+  "id" : 123456789,
+  "name" : "Joseph"
+}
+Secret: GeeksForGeeks
+
+
+https://edgepark-pe.cardinalhealth.com/authorizationserver/oauth/token?grant_type=client_credentials
+
+
+T8Y2h7zvp-tviqe2gQQ_VGQKMizn8jRgxZ74hA&
+a8b726a2-d73b-44e0-b357-4aea4e95cb49

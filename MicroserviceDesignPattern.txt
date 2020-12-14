@@ -1,0 +1,9 @@
+The Database per Service pattern describes how each service has its own database in order to ensure loose coupling.
+The API Gateway pattern defines how clients access the services in a microservice architecture.
+The Client-side Discovery and Server-side Discovery patterns are used to route requests for a client to an available service instance in a microservice architecture.
+The Messaging and Remote Procedure Invocation patterns are two different ways that services can communicate.
+The Single Service per Host and Multiple Services per Host patterns are two different deployment strategies.
+Cross-cutting concerns patterns: Microservice chassis pattern and Externalized configuration
+Testing patterns: Service Component Test and Service Integration Contract Test
+Circuit Breaker
+Access Token

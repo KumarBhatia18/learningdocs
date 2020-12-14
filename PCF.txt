@@ -1,0 +1,115 @@
+CF Command Line
+Cloud Controller
+Deigo Cell
+CCNG Blob Store - Stores APP Files
+CCDB - Stores MetaData
+
+Diego is a self-healing container management system that attempts to keep the correct number of instances running in Diego Cells to avoid network failures and crashes. Diego schedules and runs Tasks and Long-Running Processes (LRP).
+
+Admin	An admin user has permissions on all orgs and spaces
+Admin Read-Only	This role has read-only access to all Cloud Controller API resources.
+Global Auditor	This role has read-only access to all Cloud Controller API resources except for secrets such as environment variables.
+Org Managers	managers or other users who need to administer the org
+Org Auditors	view but cannot edit user information and org quota usage information
+Org Billing Managers	create and manage billing account and payment information
+Org Users	Can view the list of other org users and their roles. When an Org Manager gives a person an Org or Space role, that person automatically receives Org User status in that Org
+Space Managers	Managers or other users who administer a space within an org
+Space Developers	Application developers or other users who manage applications and services in a space
+Space Auditors	View but cannot edit the space
+
+
+cfdev is CF and BOSH on macOS
+cf-deployment requires BOSH knowledge
+BOSH Lite v2 for a local CF deployment
+
+$ cf space <some-space> # for details
+$ cf orgs
+Quotas provide resource limits to orgs and spaces
+$ cf quotas
+Run cf target to confirm your org and current space.
+
+What happens when I cf push?
+
+Upload: App files sent to CF
+Staging: Executable artifact is created (droplet)
+Running: App starts on an app host
+App receives web requests (if it binds to TCP port)
+
+CF Push
+Creates App in Cloud Controller
+Stores Meta Data in CCDB
+Upload APP Files to Cloud Controller
+Store App files to CCNG
+Start the app
+Stage app in Diego Cell
+Store app Droplet
+Report complete Staging
+Clound Controller starts Diego Running
+
+Buildpacks create a runnable artifact called a droplet
+
+  App Files + Runtime Dependencies = App Artifact (droplet)
+
+Apps are started on specialized VMs called cells
+If it’s a web process, it binds to a TCP port
+Instances are distributed across multiple cells
+Router distributes traffic across instances
+
+Buildpack: A Cloud Foundry component that resolves your app’s runtime dependencies
+
+Simplify app deployment -> focus on your code
+Fewer files, quicker app deploys
+Produce self-contained, runnable and cacheable app artifacts
+
+$ cf scale imperfect-app -i 3
+$ cf apps
+
+name            state     instances
+imperfect-app   started   2/3         
+
+Failure Instance
+They are automatically recreated by comparing desired state to actual state
+
+cf logs App logs
+cf events App events
+cf ssh SSH access to the app container
+
+Route Services transform or process requests before they reach an app
+
+A: The advantages of using Pivotal Cloud Foundry(PCF) are as follows-
+Fast application development and deployment.
+Highly scalable and available architecture.
+DevOps-friendly workflows.
+Reduced chance of human error.
+Multi-tenant compute efficiencies.
+
+
+Q: What is Cloud Foundry BuildPack?
+A: Buildpacks provide framework and runtime support for apps. Buildpacks typically examine your apps to determine what dependencies to download and how to configure the apps to communicate with bound services. When you push an app, Cloud Foundry automatically detects an appropriate buildpack for it. This buildpack is used to compile or prepare your app for launch.
+
+
+Q: Why Cloud Foundry?
+Ans:
+Open Source : Reduce vendor lock
+Public OR Private
+Language Independence ‐ Via Buildpacks
+Wide growing range of services
+
+
+Router: A unique route exist for each application. Cloud Foundry uses this router to map incoming request to the right application.
+http://techgeeknext.cfapps.io
+Blobstore: Storage for droplets and binary large files. Eliminates the need to reupload/restage when scaling application. NFS mounted storage or Amazon S3 store
+Cloud Controller Database (CCDB): Storage for application metadata.
+Sore information like Application Name, No of instances, Memory limits, application Routes, Bound services ( like MYSQL,RabbitMQ)
+A postgres DB instance
+OAuth2 Server (UAA) and Login Server: User Authorization And Authentication (UAA), provides identity, security and authorization services.
+nsync, Cell Reps,BBS : The nsync, BBS, and Cell Rep components work together along a chain to keep apps running. At one end is the user. At the other end are the instances of applications running on widely-distributed VMs, which may crash or become unavailable.
+Auctioner: Gather states from appropriate sources of truth at decision time , run the algorithm, tell the cell that wins the auction by placing the action on BBS
+Cloud Controller and Diego Brain: Cloud Controller provide restful interface to domain object, it response to client like CLI, WEB UI, Spring STS
+Diego Cell :Diego is a self healing container system that attempts to keep the correct number of instances running in Diego cells to avoid network failures and crashes.
+Service Brokers: Provide an interface for native and external third party services. For Example, Mail Server, Messaging etc.
+Consul: Consul server keeps control data that lives longer, like component IP addresses and distributed locks, to prevent components from duplicating actions.
+BBS: Bulletin Board System (BBS), central co ordination for activities (actions) within cloud foundry.
+Loggregator: Master logging process, which accepts logs from application instances and cloud foundry components.
+You can use cf log command to see the logs. It is non persistent, temporary log storage. It accumulates logs from multiple sources and aggregates by application.
+Metrics Collector: The metrics collector gathers metrics and statistics from the components. Operators can use this information to monitor a Cloud Foundry deployment

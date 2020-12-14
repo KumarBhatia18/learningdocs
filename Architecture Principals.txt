@@ -1,0 +1,33 @@
+Architecture Principals
+
+1) Scalablility
+2) Availability
+3) Security
+4) Circuit Breaker
+5) Doman Driven Design
+6) Resiliency
+7) Independent, autonomous
+
+8) Decentralized governance - Monolithic implementations usually have a single logical database for persistent data across a range of applications. It becomes complex to changes over a period of time. With microservices, each service can manage its own database, either different instances of the same database technology, or entirely different database systems.
+
+9) Failure isolation - A microservice based structure is more resistant compared to the monolithic structure. For example, a malfunctioning microservice, such as with a memory leak or unclosed database connections, will only affect that service while other services continue to handle requests. In case of a monolithic application, one malfunctioning component can bring down the entire system.
+
+10) Auto-Provisioning
+11) Continuous delivery through DevOps
+12) Single Responsibility Principle
+13) Service Oriented Architecture
+	3.2.3.1 Encapsulation
+	The services must encapsulate the internal implementation details, so that the external system utilizes the services need not worry about the internals. Encapsulation reduces the complexity and enhances the flexibility (adaptability to change) of the system.
+
+	3.2.3.2 Loose Coupling
+	The changes in one microsystem should have zero or minimum impact on other services in the eco-system.   This principle also suggests having a loosely coupled communication methods between the microservices.  As per SOA, RESTful APIs are more suitable than Java RMI, where the later enforces a technology on other microservices.
+
+	3.2.3.3 Separation of Concern
+	Develop the microservices based on distinct features with zero overlap with other functions. The main objective is to reduce the interaction between services so that they are highly cohesive and loosely coupled. If we separate the functionality across wrong boundaries will lead tight coupling and increased complexity between services.
+
+	The above core principles of SOA provided only a gist of SOA.  There are more principles and philosophies of SOA which nicely fits into design principles of microservices for cloud.
+
+
+
+The design constraints (non-functional requirements) are the important decision makers while designing microservices.  The success of a system is completely depends on Availability, Scalability, Performance, Usability and Flexibility.
+

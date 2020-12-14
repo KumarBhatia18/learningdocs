@@ -1,0 +1,19 @@
+In the Cube, the Runtime Architecture defines Architecture Capabilities that support the Runtime of an application
+e.g. Logging, Caching, Guaranteed Delivery, Encryption and
+that will be implemented by Components, typically at the Infrastructure or Platform layer (but sometimes programmatically at the Application Layer).
+Runtime Architecture Capabilities can be described as a collection of the technical capabilities within the system itself that support key business requirements:
+support the Functional Application, meeting the functional requirements and
+meet the Technical Requirements, addressing Architecture Concerns and related -illities.
+
+
+Functional RunTime Capabilities
+Technical Runtime Capabilities
+Presentation Capabilities
+Security Capabilities
+Business Processing Logic Capabilities
+Data Management Capabilities
+Caching Capabilities
+
+
+When defining the Runtime Architecture requirements, always take into consideration the “-ilities”:
+availability, performance, scalability, reliability, extensibility, reusability, interoperability, portability, maturity, and security
