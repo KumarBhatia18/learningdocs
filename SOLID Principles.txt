@@ -1,0 +1,28 @@
+
+Single Responsibility Principle - 
+
+Consider we have a Service Class for Employee that have a date field. Displaying it on UI needs a specific format. Instead of adding date formatter implementation in Service class, its advisable to create another util class for it.
+Microservices where we break the monolithic application in to multiple services based on domains that can perform individual task can be termed as Single Responsibility Principle.
+
+Open/Closed Principle - 
+
+Open for extension but closed for modification. Consider we have a travel application where on every travel booking, we save a customer record, booking details, send email and sms to the user. Consider a user opts for whatsapp notification too during travel booking. So instead of updating travel booking method to send whatsapp notifications, we can create a travelBookingSendWhatsappNotification, that calls the super travelBooking method first and send the whatsapp notification too.
+
+Liskov Substitution - 
+
+Derived or child classes must be substitutable for their base or parent classes.
+
+A particular taxi app offers these options: standard (base type), large (fit’s larger groups) (descendant), and executive (descendant), etc. The company must send a car that fit’s larger groups if you choose the large option. The only requirement of the standard option is for a car that can get you from A to B. Any car, whether from the standard, large or executive options fulfills that requirement as the other options inherit and extend from the standard option.
+
+
+Interface segregation -
+
+Consider we have a TravelInterface that performs Flight Booking as well as Hotel Booking. When a customer wants to travel, in this case he/she have to go for both Flight and Hotel Booking. What if we segregate TravelInterface into FlightBookingInterface and HotelBookingInterface that brings more flexibility into the system.
+
+Suppose if you enter a restaurant and you are pure vegetarian. The waiter in that restaurant gave you the menu card which includes vegetarian items, non-vegetarian items, drinks, and sweets. In this case, as a customer, you should have a menu card which includes only vegetarian items, not everything which you don’t eat in your food. Here the menu should be different for different types of customers. The common or general menu card for everyone can be divided into multiple cards instead of just one. Using this principle helps in reducing the side effects and frequency of required changes.
+
+
+Dependency Inversion Principle -
+
+When you book a hotel room (an object you rely on), you’re relying on the hotel (an outside source) providing you with a room on your arrival.
+When you book a flight, you are relying on the airlines to provide you a seat on your arrival.
